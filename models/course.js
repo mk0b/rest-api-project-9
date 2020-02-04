@@ -1,7 +1,7 @@
 //courses model
 const Sequelize = require('sequelize');
 
-//TODO: Add userId from the Users table.
+//TODO: Rename the foreign key? to lowercase u in userId
 
 module.exports = (sequelize) => {
     class Course extends Sequelize.Model {}
@@ -26,6 +26,10 @@ module.exports = (sequelize) => {
             type: Sequelize.STRING
         }
     }, { sequelize });
+
+    Course.associate = (models) => {
+        Course.belongsTo(models.User);
+    };
 
     return Course;
 };

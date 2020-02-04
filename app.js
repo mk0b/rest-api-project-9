@@ -18,6 +18,8 @@ const { User, Course } = models;
 
 // TODO setup your api routes here
 
+//TODO: Should I remove sync? It overwrites the npm run seed command with the base data.
+
 //Testing DB connection
 (async () => {
   try {
