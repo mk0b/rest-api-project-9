@@ -1,7 +1,7 @@
 //courses model
 const Sequelize = require('sequelize');
 
-//TODO: Rename the foreign key? to lowercase u in userId
+//TODO: Add validation
 
 module.exports = (sequelize) => {
     class Course extends Sequelize.Model {}
@@ -29,6 +29,7 @@ module.exports = (sequelize) => {
 
         Course.associate = (models) => {
             Course.belongsTo(models.User, {
+                as: 'User',
                 foreignKey: {
                     fieldName: 'userId',
                     allowNull: false

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Sequelize = require('sequelize');
-const { Course } = require('../models').models;
+const { Course, User } = require('../models').models;
 
 //TODO: Set validation
 
@@ -19,7 +19,14 @@ function asyncHelper(callback){
 //GET  /api/courses - 200 - Returns a list of courses 
 //(including the user that owns each course)
 router.get('/courses', asyncHelper(async(req, res) => {
-    const courses = await Course.findAll();
+    const courses = await Course.findAll({
+        include: [
+            {
+                model: User,
+                as: 'User'
+            }
+        ]
+    });
     console.log(courses);
     res.json(courses);
     //TODO: Once this is working include the User info as well.
