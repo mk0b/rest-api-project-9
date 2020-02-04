@@ -22,6 +22,7 @@ router.get('/courses', asyncHelper(async(req, res) => {
     const courses = await Course.findAll();
     console.log(courses);
     res.json(courses);
+    //TODO: Once this is working include the User info as well.
     //.status(200) Might not have to add this I think it's the default ok code.
 }));
 
