@@ -15,10 +15,12 @@ if (config.use_env_variable) {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
+
+//did a find a replace of db with models
 const models = {};
 
 // Import all of the models.
-fs
+/* fs
   .readdirSync(path.join(__dirname, 'models'))
   .forEach((file) => {
     console.info(`Importing database model from file: ${file}`);
@@ -32,23 +34,23 @@ Object.keys(models).forEach((modelName) => {
     console.info(`Configuring the associations for the ${modelName} model...`);
     models[modelName].associate(models);
   }
-});
+}); */
 
-/* fs
+fs
   .readdirSync(__dirname)
   .filter(file => {
     return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
   })
   .forEach(file => {
     const model = sequelize['import'](path.join(__dirname, file));
-    db[model.name] = model;
+    models[model.name] = model;
   });
 
-Object.keys(db).forEach(modelName => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
+Object.keys(models).forEach(modelName => {
+  if (models[modelName].associate) {
+    models[modelName].associate(models);
   }
-}); */
+});
 
 //db.sequelize = sequelize;
 //db.Sequelize = Sequelize;
