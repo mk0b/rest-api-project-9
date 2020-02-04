@@ -22,11 +22,16 @@ router.get('/courses', asyncHelper(async(req, res) => {
     const courses = await Course.findAll();
     console.log(courses);
     res.json(courses);
-    //.status(200)
+    //.status(200) Might not have to add this I think it's the default ok code.
 }));
 
 //GET  /api/courses/:id - 200 - Returns the course (including
 //the user that owns the course) for the provided course ID
+router.get('/courses/:id', asyncHelper(async(req, res) => {
+    const course = await Course.findByPk(req.params.id);
+    console.log(course);
+    res.json(course);
+}));
 
 //POST  /api/courses - 201 - Creates a course, sets the Location header
 //to the URI for the course, and returns no content.
