@@ -20,6 +20,7 @@ app.use(morgan('dev'));
 
 // TODO setup your api routes here
 app.use('/api', courses);
+app.use('/api', users);
 
 //TODO: Should I remove sync? It overwrites the npm run seed command with the base data.
 

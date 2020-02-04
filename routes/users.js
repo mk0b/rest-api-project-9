@@ -4,7 +4,6 @@ const Sequelize = require('sequelize');
 const User = require('../models').User;
 
 //TODO: Set validation
-//TODO: Get the data into here? I think I can just use sequelize.
 
 /* Helper function to cut down on code for each route to handle async requests.*/
 function asyncHelper(callback){
