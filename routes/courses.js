@@ -22,23 +22,29 @@ router.get('/courses', asyncHelper(async(req, res) => {
         include: [
             {
                 model: User,
-                as: 'User'
+                as: 'userInfo'
             }
         ]
     });
     res.json(courses);
 }));
 
-//GET  /api/courses/:id - 200 - Returns the course (including
-//the user that owns the course) for the provided course ID
+//GET returns a course by ID as well as the User associated with the course.
 router.get('/courses/:id', asyncHelper(async(req, res) => {
-    const course = await Course.findByPk(req.params.id);
-    console.log(course);
+    const course = await Course.findByPk(req.params.id, {
+        include: [
+            {
+                model: User,
+                as: 'userInfo'
+            }
+        ]
+    });
     res.json(course);
 }));
 
 //POST  /api/courses - 201 - Creates a course, sets the Location header
 //to the URI for the course, and returns no content.
+
 
 //PUT  /api/courses/:id - 204 - Updates a course and returns no content
 
