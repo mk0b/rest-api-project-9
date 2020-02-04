@@ -38,15 +38,24 @@ router.get('/courses/:id', asyncHelper(async(req, res) => {
                 as: 'userInfo'
             }
         ]
-    });
+    }); 
     res.json(course);
 }));
 
-//POST  /api/courses - 201 - Creates a course, sets the Location header
-//to the URI for the course, and returns no content.
+//POST creates a course, sets the Location header to the URI for the course, and returns no content.
+//TODO: "Set the location header to the URI for the course" Figure this out then
+// remove redirect.
+router.post('/courses', asyncHelper(async(req, res) => {
+    const course = await Course.create(req.body);
+    res.status(201).redirect(`/api/courses/${course.id}`);
+}));
 
-
-//PUT  /api/courses/:id - 204 - Updates a course and returns no content
+//PUT updates a course and returns no content
+router.put('/courses/:id', asyncHelper(async(req, res) => {
+    const course = await Course.findByPk(req.params.id);
+    await course.update(req.body);
+    res.status(204).end();
+}));
 
 //DELETE  /api/courses/:id - 204 - Deletes a course and returns no content
 
