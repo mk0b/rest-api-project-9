@@ -16,8 +16,7 @@ function asyncHelper(callback){
     }
 }
 
-//GET  /api/courses - 200 - Returns a list of courses 
-//(including the user that owns each course)
+//GET returns a list of courses with the user for each course.
 router.get('/courses', asyncHelper(async(req, res) => {
     const courses = await Course.findAll({
         include: [
@@ -27,10 +26,7 @@ router.get('/courses', asyncHelper(async(req, res) => {
             }
         ]
     });
-    console.log(courses);
     res.json(courses);
-    //TODO: Once this is working include the User info as well.
-    //.status(200) Might not have to add this I think it's the default ok code.
 }));
 
 //GET  /api/courses/:id - 200 - Returns the course (including
