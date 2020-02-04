@@ -43,11 +43,10 @@ router.get('/courses/:id', asyncHelper(async(req, res) => {
 }));
 
 //POST creates a course, sets the Location header to the URI for the course, and returns no content.
-//TODO: "Set the location header to the URI for the course" Figure this out then
-// remove redirect.
+//TODO: Am I setting the location correctly? I don't see any change in postman.
 router.post('/courses', asyncHelper(async(req, res) => {
     const course = await Course.create(req.body);
-    res.status(201).redirect(`/api/courses/${course.id}`);
+    res.status(201).location(`/api/courses/${course.id}`).end();
 }));
 
 //PUT updates a course and returns no content
@@ -58,5 +57,10 @@ router.put('/courses/:id', asyncHelper(async(req, res) => {
 }));
 
 //DELETE  /api/courses/:id - 204 - Deletes a course and returns no content
+router.delete('/courses/:id', asyncHelper(async(req, res) => {
+    const course = await Course.findByPk(req.params.id);
+    await course.destroy();
+    res.status(204).end();
+}));
 
 module.exports = router;
