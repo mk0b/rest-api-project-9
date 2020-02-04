@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Sequelize = require('sequelize');
-const Course = require('../models').Course;
+const { Course } = require('../models').models;
 
 //TODO: Set validation
 
