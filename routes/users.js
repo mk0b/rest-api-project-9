@@ -26,9 +26,17 @@ router.get('/users', asyncHelper(async(req, res) => {
 //POST  /api/users - 201 - Creates a user, sets the Location header to "/",
 //and returns no content.
 router.post('/users', asyncHelper(async(req, res) => {
-    await User.create(req.body);
-    res.status(201).location('/').end();
-
+    try {
+        await User.create(req.body);
+        res.status(201).location('/').end();
+    } catch (error) {
+        if (error.name === 'SequelizeValidationError') {
+            const errors = error.errors;
+            res.status(400).json(errors);
+        } else {
+            throw error;
+        }
+    }
 }));
 
 module.exports = router;
