@@ -13,11 +13,21 @@ module.exports = (sequelize) => {
             },
             title: {
                 type: Sequelize.STRING,
-                allowNull: false
+                allowNull: false,
+                validate: {
+                    notEmpty: {
+                        msg: 'Please enter a valid title.'
+                    }
+                }
             },
             description: {
                 type: Sequelize.TEXT,
-                allowNull: false
+                allowNull: false,
+                validate: {
+                    notEmpty: {
+                        msg: 'Please enter a valid description.'
+                    }
+                }
             },
             estimatedTime: {
                 type: Sequelize.STRING
