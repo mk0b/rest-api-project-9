@@ -1,6 +1,26 @@
 
 # Full Stack JavaScript Techdegree v2 - REST API Project
 
+Rest API built using:
+
+- Node.js
+- Express
+- Sequelize
+- Sqlite3
+- JavaScript
+- Love
+
+Features:
+
+- Create a User
+- Get the currently authenticated User
+- Get a list of all courses and their user owner info.
+- Get specific course info, including user owner info.
+- Update a course's info.
+- Create a new course.
+- Delete a course.
+- User authentication on certain routes. In some cases the authed user needs to own the course in other cases you just need to be logged in to view courses info.
+
 ## Overview of the Provided Project Files
 
 We've supplied the following files for you to use: 
