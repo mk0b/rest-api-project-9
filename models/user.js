@@ -1,8 +1,6 @@
 //users model
 const Sequelize = require('sequelize');
 
-//TODO: Add validation later with custom validation messages?
-
 module.exports = (sequelize) => {
     class User extends Sequelize.Model {}
         User.init({
