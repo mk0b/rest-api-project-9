@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Sequelize = require('sequelize');
 const { User } = require('../models').models;
+const bcryptjs = require('bcryptjs');
 
 //TODO: Set validation
 
@@ -27,7 +28,10 @@ router.get('/users', asyncHelper(async(req, res) => {
 //and returns no content.
 router.post('/users', asyncHelper(async(req, res) => {
     try {
-        await User.create(req.body);
+        const user = req.body;
+        //hashing the password before it gets stored.
+        user.password = bcryptjs.hashSync(user.password);
+        await User.create(user);
         res.status(201).location('/').end();
     } catch (error) {
         if (error.name === 'SequelizeValidationError') {
