@@ -65,7 +65,12 @@ const authenticateUser = async(req, res, next) => {
 //GET returns the currently authenticated user.
 router.get('/users', authenticateUser, asyncHelper(async(req, res) => {
     const user = req.currentUser;
-    res.json(user);
+    res.json({
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        emailAddress: user.emailAddress
+    });
 }));
 
 //POST creates a user, sets the Location header to "/", and returns no content.
