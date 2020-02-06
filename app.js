@@ -28,7 +28,7 @@ app.use('/api', users);
     await sequelize.authenticate();
     console.log('Connection to DB succesful!!');
 
-    //sync the models
+    //sync the models - leaving this here to help with testing if a db refresh is needed.
     //console.log('Synchronizing the models with the database...');
     //await sequelize.sync({ force: true });
 
