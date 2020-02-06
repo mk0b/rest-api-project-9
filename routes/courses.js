@@ -91,9 +91,21 @@ router.get('/courses/:id', asyncHelper(async(req, res) => {
         include: [
             {
                 model: User,
-                as: 'userInfo'
+                as: 'userInfo',
+                attributes: {
+                    exclude: [
+                        'createdAt',
+                        'updatedAt'
+                    ]
+                }
             }
-        ]
+        ],
+        attributes: {
+            exclude: [
+                'createdAt',
+                'updatedAt'
+            ]
+        }
     }); 
     res.json(course);
 }));
