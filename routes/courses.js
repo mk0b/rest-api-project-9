@@ -7,6 +7,8 @@ const bcryptjs = require('bcryptjs');
 //for user authentication
 const auth = require('basic-auth');
 
+/* HELPER FUNCTIONS */
+
 //TODO: The PUT /api/courses/:id and DELETE /api/courses/:id routes 
 //return a 403 status code if the current user doesn't own the 
 //requested course
@@ -63,6 +65,8 @@ const authenticateUser = async(req, res, next) => {
         next();
     }
 };
+
+/* ROUTES */
 
 //GET returns a list of courses with the user for each course.
 router.get('/courses', asyncHelper(async(req, res) => {
@@ -148,7 +152,7 @@ router.put('/courses/:id', authenticateUser, asyncHelper(async(req, res) => {
     }
 }));
 
-//DELETE  /api/courses/:id - 204 - Deletes a course and returns no content
+//DELETE deletes a course and returns no content
 router.delete('/courses/:id', authenticateUser, asyncHelper(async(req, res) => {
     const course = await Course.findByPk(req.params.id);
     await course.destroy();

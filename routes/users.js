@@ -7,6 +7,8 @@ const bcryptjs = require('bcryptjs');
 //for user authentication
 const auth = require('basic-auth');
 
+/* HELPER FUNCTIONS */
+
 /* Helper function to cut down on code for each route to handle async requests.*/
 function asyncHelper(callback){
     return async(req, res, next) => {
@@ -76,6 +78,8 @@ const isExistingEmail = async(emailField) => {
         return false;
     }
 };
+
+/* ROUTES */
 
 //GET returns the currently authenticated user.
 router.get('/users', authenticateUser, asyncHelper(async(req, res) => {
