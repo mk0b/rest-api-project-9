@@ -2,7 +2,10 @@ const express = require('express');
 const router = express.Router();
 const Sequelize = require('sequelize');
 const { User } = require('../models').models;
+//bcryptjs for hashing password
 const bcryptjs = require('bcryptjs');
+//for user authentication
+const auth = require('basic-auth');
 
 //TODO: Set validation
 
@@ -17,11 +20,53 @@ function asyncHelper(callback){
     }
 }
 
+//custom middleware to handle authentication
+const authenticateUser = async(req, res, next) => {
+    //parse user creds from the auth header
+    const credentials = auth(req);
+    console.log('Credentials: ', credentials);
+    let message;
+
+    //if user creds are available
+    if (credentials) {
+        //try to retrieve username from the db
+        const user = await User.findOne({ where: { emailAddress: credentials.name }});
+        console.log('User: ', user);
+        //if a user was succesfully found
+        if (user) {
+            //using bcryptjs to compare the hashed password with the credential password
+            const authenticated = bcryptjs.compareSync(credentials.pass, user.password);
+            
+            //if passwords match
+            if (authenticated) {
+                //store the found user data on the request object
+                //so we have access to the user data in other places
+                req.currentUser = user;
+            } else {
+                message = `Authentication for email address: ${user.emailAddress} `;
+            }
+        } else {
+            message = `User not found for email address: ${credentials.name}`;
+        }
+    } else {
+        message = 'Auth header not found';
+    }
+
+    //if user auth failed
+    if (message) {
+        console.warn(message);
+        res.status(401).json({ message: 'Access denied.' })
+    } else {
+        //if user auth succeeded
+        next();
+    }
+};
+
 //GET  /api/users - 200 - Returns the currently authenticated user.
 //TODO: Make it so I only get the currently authenticated user.
-router.get('/users', asyncHelper(async(req, res) => {
-    const users = await User.findAll();
-    res.json(users);
+router.get('/users', authenticateUser, asyncHelper(async(req, res) => {
+    const user = req.currentUser;
+    res.json(user);
 }));
 
 //POST  /api/users - 201 - Creates a user, sets the Location header to "/",
