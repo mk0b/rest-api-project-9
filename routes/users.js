@@ -7,10 +7,6 @@ const bcryptjs = require('bcryptjs');
 //for user authentication
 const auth = require('basic-auth');
 
-//TODO: The POST /api/users route validates that the provided email 
-//address is a valid email address and isn't already associated with 
-//an existing user
-
 /* Helper function to cut down on code for each route to handle async requests.*/
 function asyncHelper(callback){
     return async(req, res, next) => {
@@ -73,9 +69,11 @@ const isValidEmail = (emailField) => {
 const isExistingEmail = async(emailField) => {
     const email = await User.findOne({ where: { emailAddress: emailField }});
     if (email) {
-        return false;
-    } else {
+        //email does already exist in db
         return true;
+    } else {
+        //email doesn't already exist in db
+        return false;
     }
 };
 
@@ -95,12 +93,34 @@ router.post('/users', asyncHelper(async(req, res) => {
     try {
         const user = req.body;
         console.log('Regex validation: ', isValidEmail(user.emailAddress));
-        console.log('Existing Email Validation: ', isExistingEmail(user.emailAddress));
-        //TODO: Why is existing email validation not returning true or false?
-        //hashing the password before it gets stored.
-        user.password = bcryptjs.hashSync(user.password);
-        await User.create(user);
-        res.status(201).location('/').end();
+        console.log('Existing Email Validation: ', await isExistingEmail(user.emailAddress));
+        
+        let message;
+        //check if email address if valid
+        if (isValidEmail(user.emailAddress)) {
+            //check if email already exists
+            if (!await isExistingEmail(user.emailAddress)) {
+                //create user
+                //if real email address and does not exist in db.
+                //hashing the password before it gets stored.
+                user.password = bcryptjs.hashSync(user.password);
+                await User.create(user);
+                res.status(201).location('/').end();            
+                console.log('User created!');
+            } else {
+                //error email already exists.
+                message = `${user.emailAddress} already exists in the database.`;
+            }
+        } else {
+            //error email needs to be a valid email format.
+            message = 'Please enter an email with a valid email format. Example: megan@email.com.'
+        }
+        
+        //if email validation failed
+        if (message) {
+            console.warn(message);
+            res.status(401).json(message)
+        }
     } catch (error) {
         if (error.name === 'SequelizeValidationError') {
             const errors = error.errors;

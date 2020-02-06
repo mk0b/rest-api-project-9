@@ -73,6 +73,7 @@ router.get('/courses', asyncHelper(async(req, res) => {
                 as: 'userInfo',
                 attributes: {
                     exclude: [
+                        'password',
                         'createdAt',
                         'updatedAt'
                     ]
@@ -98,6 +99,7 @@ router.get('/courses/:id', asyncHelper(async(req, res) => {
                 as: 'userInfo',
                 attributes: {
                     exclude: [
+                        'password',
                         'createdAt',
                         'updatedAt'
                     ]
