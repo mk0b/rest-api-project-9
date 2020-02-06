@@ -9,12 +9,6 @@ const auth = require('basic-auth');
 
 /* HELPER FUNCTIONS */
 
-//TODO: The PUT /api/courses/:id and DELETE /api/courses/:id routes 
-//return a 403 status code if the current user doesn't own the 
-//requested course
-
-//compare currentUser to the userID associated with the course record.
-
 /* Helper function to cut down on code for each route to handle async requests.*/
 function asyncHelper(callback){
     return async(req, res, next) => {
@@ -123,7 +117,6 @@ router.get('/courses/:id', asyncHelper(async(req, res) => {
 }));
 
 //POST creates a course, sets the Location header to the URI for the course, and returns no content.
-//TODO: Am I setting the location correctly? I don't see any change in postman.
 router.post('/courses', authenticateUser, asyncHelper(async(req, res) => {
     try {
         const course = await Course.create(req.body);
@@ -141,27 +134,38 @@ router.post('/courses', authenticateUser, asyncHelper(async(req, res) => {
 //PUT updates a course and returns no content
 router.put('/courses/:id', authenticateUser, asyncHelper(async(req, res) => {
     const course = await Course.findByPk(req.params.id);
-    console.log('currentUser ID: ', req.currentUser.id);
-    console.log('userInfo ID: ', course.userInfo.id);
 
-    try {
-        await course.update(req.body);
-        res.status(204).end();
-    } catch (error) {
-        if (error.name === 'SequelizeValidationError') {
-            const errors = error.errors;
-            res.status(400).json(errors);
-        } else {
-            throw error;
+    //comparing the current user ID with the user owner of the course's id.
+    if (req.currentUser.id === course.userId) {
+        try {
+            await course.update(req.body);
+            res.status(204).end();
+        } catch (error) {
+            if (error.name === 'SequelizeValidationError') {
+                const errors = error.errors;
+                res.status(400).json(errors);
+            } else {
+                throw error;
+            }
         }
+    } else {
+        //if it does not match, access denied
+        res.status(403).json('Access Denied. This user does not own this course.');
     }
 }));
 
 //DELETE deletes a course and returns no content
 router.delete('/courses/:id', authenticateUser, asyncHelper(async(req, res) => {
     const course = await Course.findByPk(req.params.id);
-    await course.destroy();
-    res.status(204).end();
+    
+        //comparing the current user ID with the user owner of the course's id.
+        if (req.currentUser.id === course.userId) {
+                await course.destroy();
+                res.status(204).end();
+        } else {
+            //if it does not match, access denied
+            res.status(403).json('Access Denied. This user does not own this course.');
+        }
 }));
 
 module.exports = router;
