@@ -1,8 +1,6 @@
 //courses model
 const Sequelize = require('sequelize');
 
-//TODO: Add validation
-
 module.exports = (sequelize) => {
     class Course extends Sequelize.Model {}
         Course.init({
