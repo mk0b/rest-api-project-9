@@ -7,7 +7,9 @@ const bcryptjs = require('bcryptjs');
 //for user authentication
 const auth = require('basic-auth');
 
-//TODO: Set validation
+//TODO: The POST /api/users route validates that the provided email 
+//address is a valid email address and isn't already associated with 
+//an existing user
 
 /* Helper function to cut down on code for each route to handle async requests.*/
 function asyncHelper(callback){
@@ -62,6 +64,21 @@ const authenticateUser = async(req, res, next) => {
     }
 };
 
+//Helper function to use regex to test that the email entered is valid.
+const isValidEmail = (emailField) => {
+    return /^[^@]+@[^@.]+\.[a-z]+$/i.test(emailField);
+};
+
+//Helper function to check if the email already exists in the db.
+const isExistingEmail = async(emailField) => {
+    const email = await User.findOne({ where: { emailAddress: emailField }});
+    if (email) {
+        return false;
+    } else {
+        return true;
+    }
+};
+
 //GET returns the currently authenticated user.
 router.get('/users', authenticateUser, asyncHelper(async(req, res) => {
     const user = req.currentUser;
@@ -77,6 +94,9 @@ router.get('/users', authenticateUser, asyncHelper(async(req, res) => {
 router.post('/users', asyncHelper(async(req, res) => {
     try {
         const user = req.body;
+        console.log('Regex validation: ', isValidEmail(user.emailAddress));
+        console.log('Existing Email Validation: ', isExistingEmail(user.emailAddress));
+        //TODO: Why is existing email validation not returning true or false?
         //hashing the password before it gets stored.
         user.password = bcryptjs.hashSync(user.password);
         await User.create(user);

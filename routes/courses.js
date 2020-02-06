@@ -7,6 +7,10 @@ const bcryptjs = require('bcryptjs');
 //for user authentication
 const auth = require('basic-auth');
 
+//TODO: The PUT /api/courses/:id and DELETE /api/courses/:id routes 
+//return a 403 status code if the current user doesn't own the 
+//requested course
+
 /* Helper function to cut down on code for each route to handle async requests.*/
 function asyncHelper(callback){
     return async(req, res, next) => {
