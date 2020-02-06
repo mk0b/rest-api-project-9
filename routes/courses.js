@@ -2,8 +2,10 @@ const express = require('express');
 const router = express.Router();
 const Sequelize = require('sequelize');
 const { Course, User } = require('../models').models;
-
-//TODO: Set validation
+//bcryptjs for hashing password
+const bcryptjs = require('bcryptjs');
+//for user authentication
+const auth = require('basic-auth');
 
 /* Helper function to cut down on code for each route to handle async requests.*/
 function asyncHelper(callback){
@@ -15,6 +17,48 @@ function asyncHelper(callback){
         }
     }
 }
+
+//custom middleware to handle authentication
+const authenticateUser = async(req, res, next) => {
+    //parse user creds from the auth header
+    const credentials = auth(req);
+    console.log('Credentials: ', credentials);
+    let message;
+
+    //if user creds are available
+    if (credentials) {
+        //try to retrieve username from the db
+        const user = await User.findOne({ where: { emailAddress: credentials.name }});
+        console.log('User: ', user);
+        //if a user was succesfully found
+        if (user) {
+            //using bcryptjs to compare the hashed password with the credential password
+            const authenticated = bcryptjs.compareSync(credentials.pass, user.password);
+            
+            //if passwords match
+            if (authenticated) {
+                //store the found user data on the request object
+                //so we have access to the user data in other places
+                req.currentUser = user;
+            } else {
+                message = `Authentication for email address: ${user.emailAddress} `;
+            }
+        } else {
+            message = `User not found for email address: ${credentials.name}`;
+        }
+    } else {
+        message = 'Auth header not found';
+    }
+
+    //if user auth failed
+    if (message) {
+        console.warn(message);
+        res.status(401).json({ message: 'Access denied.' })
+    } else {
+        //if user auth succeeded
+        next();
+    }
+};
 
 //GET returns a list of courses with the user for each course.
 router.get('/courses', asyncHelper(async(req, res) => {
@@ -44,7 +88,7 @@ router.get('/courses/:id', asyncHelper(async(req, res) => {
 
 //POST creates a course, sets the Location header to the URI for the course, and returns no content.
 //TODO: Am I setting the location correctly? I don't see any change in postman.
-router.post('/courses', asyncHelper(async(req, res) => {
+router.post('/courses', authenticateUser, asyncHelper(async(req, res) => {
     try {
         const course = await Course.create(req.body);
         res.status(201).location(`/api/courses/${course.id}`).end();
@@ -59,7 +103,7 @@ router.post('/courses', asyncHelper(async(req, res) => {
 }));
 
 //PUT updates a course and returns no content
-router.put('/courses/:id', asyncHelper(async(req, res) => {
+router.put('/courses/:id', authenticateUser, asyncHelper(async(req, res) => {
     const course = await Course.findByPk(req.params.id);
     try {
         await course.update(req.body);
@@ -75,7 +119,7 @@ router.put('/courses/:id', asyncHelper(async(req, res) => {
 }));
 
 //DELETE  /api/courses/:id - 204 - Deletes a course and returns no content
-router.delete('/courses/:id', asyncHelper(async(req, res) => {
+router.delete('/courses/:id', authenticateUser, asyncHelper(async(req, res) => {
     const course = await Course.findByPk(req.params.id);
     await course.destroy();
     res.status(204).end();
