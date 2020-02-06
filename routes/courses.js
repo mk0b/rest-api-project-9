@@ -13,6 +13,8 @@ const auth = require('basic-auth');
 //return a 403 status code if the current user doesn't own the 
 //requested course
 
+//compare currentUser to the userID associated with the course record.
+
 /* Helper function to cut down on code for each route to handle async requests.*/
 function asyncHelper(callback){
     return async(req, res, next) => {
@@ -139,6 +141,9 @@ router.post('/courses', authenticateUser, asyncHelper(async(req, res) => {
 //PUT updates a course and returns no content
 router.put('/courses/:id', authenticateUser, asyncHelper(async(req, res) => {
     const course = await Course.findByPk(req.params.id);
+    console.log('currentUser ID: ', req.currentUser.id);
+    console.log('userInfo ID: ', course.userInfo.id);
+
     try {
         await course.update(req.body);
         res.status(204).end();

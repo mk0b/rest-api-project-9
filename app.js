@@ -22,8 +22,6 @@ app.use(morgan('dev'));
 app.use('/api', courses);
 app.use('/api', users);
 
-//TODO: Should I remove sync? It overwrites the npm run seed command with the base data.
-
 //Testing DB connection
 (async () => {
   try {
