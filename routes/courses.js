@@ -24,14 +24,13 @@ function asyncHelper(callback){
 const authenticateUser = async(req, res, next) => {
     //parse user creds from the auth header
     const credentials = auth(req);
-    console.log('Credentials: ', credentials);
     let message;
 
     //if user creds are available
     if (credentials) {
         //try to retrieve username from the db
         const user = await User.findOne({ where: { emailAddress: credentials.name }});
-        console.log('User: ', user);
+
         //if a user was succesfully found
         if (user) {
             //using bcryptjs to compare the hashed password with the credential password
