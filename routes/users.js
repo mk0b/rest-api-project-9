@@ -62,15 +62,13 @@ const authenticateUser = async(req, res, next) => {
     }
 };
 
-//GET  /api/users - 200 - Returns the currently authenticated user.
-//TODO: Make it so I only get the currently authenticated user.
+//GET returns the currently authenticated user.
 router.get('/users', authenticateUser, asyncHelper(async(req, res) => {
     const user = req.currentUser;
     res.json(user);
 }));
 
-//POST  /api/users - 201 - Creates a user, sets the Location header to "/",
-//and returns no content.
+//POST creates a user, sets the Location header to "/", and returns no content.
 router.post('/users', asyncHelper(async(req, res) => {
     try {
         const user = req.body;
