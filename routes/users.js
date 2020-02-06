@@ -24,14 +24,13 @@ function asyncHelper(callback){
 const authenticateUser = async(req, res, next) => {
     //parse user creds from the auth header
     const credentials = auth(req);
-    console.log('Credentials: ', credentials);
     let message;
 
     //if user creds are available
     if (credentials) {
         //try to retrieve username from the db
         const user = await User.findOne({ where: { emailAddress: credentials.name }});
-        console.log('User: ', user);
+
         //if a user was succesfully found
         if (user) {
             //using bcryptjs to compare the hashed password with the credential password
@@ -96,10 +95,8 @@ router.get('/users', authenticateUser, asyncHelper(async(req, res) => {
 router.post('/users', asyncHelper(async(req, res) => {
     try {
         const user = req.body;
-        console.log('Regex validation: ', isValidEmail(user.emailAddress));
-        console.log('Existing Email Validation: ', await isExistingEmail(user.emailAddress));
-        
         let message;
+
         //check if email address if valid
         if (isValidEmail(user.emailAddress)) {
             //check if email already exists
