@@ -102,12 +102,16 @@ router.post('/users', asyncHelper(async(req, res) => {
             //check if email already exists
             if (!await isExistingEmail(user.emailAddress)) {
                 //create user
-                //if real email address and does not exist in db.
-                //hashing the password before it gets stored.
-                user.password = bcryptjs.hashSync(user.password);
-                await User.create(user);
-                res.status(201).location('/').end();            
-                console.log('User created!');
+                if (user.password) {
+                    //if real email address and does not exist in db.
+                    //hashing the password before it gets stored.
+                    user.password = bcryptjs.hashSync(user.password);
+                    await User.create(user);
+                    res.status(201).location('/').end();            
+                    console.log('User created!');
+                } else {
+                    res.status(400).json({ errorMessage: 'Please enter a password.' });
+                }
             } else {
                 //error email already exists.
                 message = `${user.emailAddress} already exists in the database.`;
