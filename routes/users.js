@@ -120,7 +120,7 @@ router.post('/users', asyncHelper(async(req, res) => {
         //if email validation failed
         if (message) {
             console.warn(message);
-            res.status(401).json(message)
+            res.status(401).json(message);
         }
     } catch (error) {
         if (error.name === 'SequelizeValidationError') {
