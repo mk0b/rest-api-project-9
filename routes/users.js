@@ -61,25 +61,6 @@ const authenticateUser = async(req, res, next) => {
     }
 };
 
-//TODO: Remove these helper functions.
-
-//Helper function to use regex to test that the email entered is valid.
-const isValidEmail = (emailField) => {
-    return /^[^@]+@[^@.]+\.[a-z]+$/i.test(emailField);
-};
-
-//Helper function to check if the email already exists in the db.
-const isExistingEmail = async(emailField) => {
-    const email = await User.findOne({ where: { emailAddress: emailField }});
-    if (email) {
-        //email does already exist in db
-        return true;
-    } else {
-        //email doesn't already exist in db
-        return false;
-    }
-};
-
 /* ROUTES */
 
 //GET returns the currently authenticated user.
@@ -97,7 +78,6 @@ router.get('/users', authenticateUser, asyncHelper(async(req, res) => {
 router.post('/users', asyncHelper(async(req, res) => {
     try {
         const user = req.body;
-        //let message;
 
         //I had to add this here because my password validation wasn't coming through.
         //bycrypt was setting something there even with password empty, this fixes that.
@@ -122,36 +102,3 @@ router.post('/users', asyncHelper(async(req, res) => {
 }));
 
 module.exports = router;
-
-/* 
-        
-        //check if email address if valid
-        if (isValidEmail(user.emailAddress)) {
-            //check if email already exists
-            if (!await isExistingEmail(user.emailAddress)) {
-                //create user
-                if (user.password) {
-                    //if real email address and does not exist in db.
-                    //hashing the password before it gets stored.
-                    user.password = bcryptjs.hashSync(user.password);
-                    await User.create(user);
-                    res.status(201).location('/').end();            
-                    console.log('User created!');
-                } else {
-                    res.status(400).json({ errorMessage: 'Please enter a password.' });
-                }
-            } else {
-                //error email already exists.
-                message = `${user.emailAddress} already exists in the database.`;
-            }
-        } else {
-            //error email needs to be a valid email format.
-            message = 'Please enter an email with a valid email format. Example: megan@email.com.'
-        }
-        
-        //if email validation failed
-        if (message) {
-            console.warn(message);
-            res.status(401).json(message);
-        }
-*/
