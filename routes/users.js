@@ -7,6 +7,8 @@ const bcryptjs = require('bcryptjs');
 //for user authentication
 const auth = require('basic-auth');
 
+//TODO: Users route fix. Basically do an if check like do below and have the else check the mail stuff?
+
 /* HELPER FUNCTIONS */
 
 /* Helper function to cut down on code for each route to handle async requests.*/
@@ -97,6 +99,7 @@ router.post('/users', asyncHelper(async(req, res) => {
         const user = req.body;
         let message;
 
+        
         //check if email address if valid
         if (isValidEmail(user.emailAddress)) {
             //check if email already exists
@@ -128,7 +131,7 @@ router.post('/users', asyncHelper(async(req, res) => {
         }
     } catch (error) {
         if (error.name === 'SequelizeValidationError') {
-            const errors = error.errors;
+            const errors = error.errors.map(err => err.message);
             res.status(400).json(errors);
         } else {
             throw error;

@@ -122,7 +122,7 @@ router.post('/courses', authenticateUser, asyncHelper(async(req, res) => {
         res.status(201).location(`/api/courses/${course.id}`).end();
     } catch (error) {
         if (error.name === 'SequelizeValidationError') {
-            const errors = error.errors;
+            const errors = error.errors.map(err => err.message);
             res.status(400).json(errors);
         } else {
             throw error;
@@ -141,7 +141,7 @@ router.put('/courses/:id', authenticateUser, asyncHelper(async(req, res) => {
             res.status(204).end();
         } catch (error) {
             if (error.name === 'SequelizeValidationError') {
-                const errors = error.errors;
+                const errors = error.errors.map(err => err.message);
                 res.status(400).json(errors);
             } else {
                 throw error;
