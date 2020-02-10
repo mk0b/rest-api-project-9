@@ -93,8 +93,15 @@ router.post('/users', asyncHelper(async(req, res) => {
         if (error.name === 'SequelizeValidationError') {
             const errors = error.errors.map(err => err.message);
             console.log('Errors: ', errors);
-            res.status(400).json(errors);
-            //TODO: Add an if statement for email validations to res 401.
+            if (errors[0] === 'Please enter a valid email address.') {
+                res.status(401).json(errors);
+            } else {
+                res.status(400).json(errors);
+            }
+        } else if (error.name === 'SequelizeUniqueConstraintError') {
+            const errors = error.errors.map(err => err.message);
+            console.log('Errors: ', errors);
+            res.status(401).json(errors);
         } else {
             throw error;
         }
