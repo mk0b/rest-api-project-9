@@ -37,6 +37,10 @@ module.exports = (sequelize) => {
                     isEmail: {
                         msg: 'Please enter a valid email address.'
                     }
+                },
+                unique: {
+                    args: true,
+                    msg: 'Email address is already in use.'
                 }
             },
             password: {
