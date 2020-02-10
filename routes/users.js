@@ -7,8 +7,6 @@ const bcryptjs = require('bcryptjs');
 //for user authentication
 const auth = require('basic-auth');
 
-//TODO: Users route fix. Basically do an if check like do below and have the else check the mail stuff?
-
 /* HELPER FUNCTIONS */
 
 /* Helper function to cut down on code for each route to handle async requests.*/
@@ -63,6 +61,8 @@ const authenticateUser = async(req, res, next) => {
     }
 };
 
+//TODO: Remove these helper functions.
+
 //Helper function to use regex to test that the email entered is valid.
 const isValidEmail = (emailField) => {
     return /^[^@]+@[^@.]+\.[a-z]+$/i.test(emailField);
@@ -97,8 +97,33 @@ router.get('/users', authenticateUser, asyncHelper(async(req, res) => {
 router.post('/users', asyncHelper(async(req, res) => {
     try {
         const user = req.body;
-        let message;
+        //let message;
 
+        //I had to add this here because my password validation wasn't coming through.
+        //bycrypt was setting something there even with password empty, this fixes that.
+        if (user.password) {
+            //hashing the password before it gets stored.
+            user.password = bcryptjs.hashSync(user.password);
+        }
+        await User.create(user);
+        res.status(201).location('/').end();            
+        console.log('User created!');
+    } catch (error) {
+        console.log('Error Name: ', error.name);
+        if (error.name === 'SequelizeValidationError') {
+            const errors = error.errors.map(err => err.message);
+            console.log('Errors: ', errors);
+            res.status(400).json(errors);
+            //TODO: Add an if statement for email validations to res 401.
+        } else {
+            throw error;
+        }
+    }
+}));
+
+module.exports = router;
+
+/* 
         
         //check if email address if valid
         if (isValidEmail(user.emailAddress)) {
@@ -129,14 +154,4 @@ router.post('/users', asyncHelper(async(req, res) => {
             console.warn(message);
             res.status(401).json(message);
         }
-    } catch (error) {
-        if (error.name === 'SequelizeValidationError') {
-            const errors = error.errors.map(err => err.message);
-            res.status(400).json(errors);
-        } else {
-            throw error;
-        }
-    }
-}));
-
-module.exports = router;
+*/

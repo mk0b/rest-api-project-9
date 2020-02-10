@@ -32,7 +32,10 @@ module.exports = (sequelize) => {
                 allowNull: false,
                 validate: {
                     notEmpty: {
-                        msg: 'Please enter a valid emailAddress.'
+                        msg: 'Email address cannot be empty.'
+                    },
+                    isEmail: {
+                        msg: 'Please enter a valid email address.'
                     }
                 }
             },
